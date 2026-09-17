@@ -1,0 +1,51 @@
+{
+  "slug": "protean-drafts",
+  "version": "1.0.0",
+  "contract": "The draft-review pipeline: render a draft as a self-contained dark HTML review page through one command that runs the prose, identifier, quote-integrity, and render-fidelity gates.",
+  "kind": "skills",
+  "entrypoint": "install.sh",
+  "payload": [
+    "skills/draft-review-html",
+    "scripts/protean-drafts",
+    "templates/protean-drafts",
+    "gates/protean-drafts"
+  ],
+  "installTargets": [
+    "skills/draft-review-html",
+    "scripts/protean-drafts",
+    "templates/protean-drafts",
+    "gates/protean-drafts"
+  ],
+  "gates": [
+    {
+      "name": "internal-names",
+      "cwd": ".",
+      "postInstall": true,
+      "cmd": "python3 gates/protean-drafts/check-internal-names.py ."
+    },
+    {
+      "name": "draft-prose",
+      "cwd": ".",
+      "postInstall": true,
+      "cmd": "python3 scripts/protean-drafts/check-prose.py skills/draft-review-html/SKILL.md"
+    },
+    {
+      "name": "draft-renderer-defaults",
+      "cwd": ".",
+      "postInstall": true,
+      "cmd": "python3 gates/protean-drafts/check-renderer-defaults.py ."
+    }
+  ],
+  "requires": [],
+  "recommends": [
+    "protean-doctrine"
+  ],
+  "runtime": {
+    "python": ">=3.9",
+    "bin": [
+      "git"
+    ]
+  },
+  "license": "MIT",
+  "open": []
+}
