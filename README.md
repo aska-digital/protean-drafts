@@ -6,6 +6,19 @@ The draft-review ingredient of the Protean Kit distribution. It renders a draft
 as one self-contained dark HTML page, and it runs the gate sequence that decides
 whether the draft may be posted at all.
 
+## Do you need this?
+
+ROLE: The draft-review ingredient. One command renders a draft as a self-contained dark HTML review page and runs the gate sequence that decides whether the draft may be posted.
+
+USE WHEN:
+- A pull request or issue draft must be shown to a human as a single page, using `templates/protean-drafts/pr-draft.md` or `issue-draft.md` through `scripts/protean-drafts/draft_pipeline.py`.
+- The draft must clear the prose gate, the identifier and quote-integrity checks, and the renderer-defaults gate before posting.
+- Only the renderer is needed. `scripts/protean-drafts/render_draft_html.py` runs standalone, with `markdown` and `pygments` required for rendering while every gate stays stdlib only.
+
+SKIP WHEN:
+- The need is to approve, merge, or audit on GitHub. That is `protean-github-flow`.
+- The need is record or protocol validation. Record gates live in `protean-ops` and protocol validation lives in `protean-sym2p`.
+
 ## What it installs and where
 
 | Path | Contents |
