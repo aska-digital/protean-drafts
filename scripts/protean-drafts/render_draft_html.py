@@ -47,7 +47,7 @@ __version__ = "1.2.0"  # 1.2.0: --owners/--state, so external drafts carry the p
 # Neutral placeholder chain: no personal or roster identity is compiled in.
 # Pass --owners "<chain>" to name the actual owners of a draft.
 DEFAULT_OWNERS = "author / renderer / qa / coordinator"
-DEFAULT_STATE = "awaiting Ahraz\u2019s review"
+DEFAULT_STATE = "awaiting human review"
 
 # --------------------------------------------------------------------------
 # Embedded github-markdown-css (fetched from GitHub's public stylesheet).
