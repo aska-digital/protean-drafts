@@ -1,6 +1,6 @@
 {
   "slug": "protean-drafts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "contract": "The draft-review pipeline: render a draft as a self-contained dark HTML review page through one command that runs the prose, identifier, quote-integrity, and render-fidelity gates.",
   "kind": "skills",
   "entrypoint": "install.sh",

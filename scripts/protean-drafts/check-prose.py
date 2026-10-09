@@ -12,7 +12,7 @@ failed at least once.
 
 Exit codes: 0 clean, 1 tells found, 3 usage/IO error.
 
-Rules are from the external-writing-discipline and github-pr-audit skills.
+Rules are from the clean-writing and github-pr-audit skills.
 A hit is a candidate to fix, not a verdict: a quote from someone else, a code block,
 and an em dash inside a quoted command are all legitimate. Read each hit.
 """
