@@ -8,14 +8,17 @@
 
 What it does (all gates from the draft-review-html procedure, in order):
   1. prose gate            check-prose.py must report clean
-  2. identifier gate       no /Users paths, usernames, profile/agent names, hostnames, emails
-  3. verbatim gate         every ```python fence must appear in one --verify-against source
+  2. visual value gate     visual-value-gate.py decides if content warrants a visual
+                           (advisory: warns when WARRANTED, never blocks)
+  3. mermaid auto-check    if ```mermaid fences present, check-mermaid.py must pass
+  4. identifier gate       no /Users paths, usernames, profile/agent names, hostnames, emails
+  5. verbatim gate         every ```python fence must appear in one --verify-against source
                            (git `REF:PATH` or a plain path), modulo uniform indentation
-  4. render                render_draft_html.py into <drafts-root>/<batch>/<slug>.html
-  5. fidelity gate         0 source lines missing from the rendered text
-  6. palette gate          the seven core dark tokens + color-scheme meta present
-  7. containment gate      no external asset fetch; repo/tab/badge chrome present
-  8. banner gate           no false "no change" claim without a baseline
+  6. render                render_draft_html.py into <drafts-root>/<batch>/<slug>.html
+  7. fidelity gate         0 source lines missing from the rendered text
+  8. palette gate          the seven core dark tokens + color-scheme meta present
+  9. containment gate      no external asset fetch; repo/tab/badge chrome present
+  10. banner gate          no false "no change" claim without a baseline
 
 Exit 0 only when every gate passes. Prints the review path and the posting source path.
 
@@ -160,6 +163,36 @@ def prose_gate(md: Path, python: str) -> tuple[bool, str]:
     return ("clean" in out.lower()), out.splitlines()[0] if out else "no output"
 
 
+def visual_value_gate(md: Path, python: str) -> tuple[bool, str]:
+    """Advisory gate: warns when content warrants a visual but none is present.
+    Never blocks. Exit 0 = NOT-WARRANTED, 1 = WARRANTED (advisory), 2 = VALIDATION."""
+    vg = Path(__file__).resolve().parent / "visual-value-gate.py"
+    if not vg.is_file():
+        return True, "visual-value-gate.py not found (skipped)"
+    p = run([python, str(vg), str(md)])
+    out = (p.stdout + p.stderr).strip()
+    if "NOT-WARRANTED" in out:
+        return True, "NOT-WARRANTED (prose sufficient)"
+    if "WARRANTED" in out:
+        return True, f"ADVISORY visual missing — {out.splitlines()[1].strip() if len(out.splitlines()) > 1 else 'see gate output'}"
+    if "VALIDATION" in out:
+        return True, "VALIDATION (visual present)"
+    return True, out.splitlines()[0] if out else "no output"
+
+
+def mermaid_check(md: Path, python: str) -> tuple[bool, str]:
+    """Auto-check mermaid fences if present. Hard fail on invalid fences."""
+    cm = Path(__file__).resolve().parent / "check-mermaid.py"
+    if not cm.is_file():
+        return True, "check-mermaid.py not found (skipped)"
+    text = md.read_text(encoding="utf-8")
+    if "```mermaid" not in text:
+        return True, "no mermaid fences (skipped)"
+    p = run([python, str(cm), str(md)])
+    out = (p.stdout + p.stderr).strip()
+    return (p.returncode == 0), out.splitlines()[0] if out else "no output"
+
+
 def _flat_body(html: str) -> str:
     body = html.split("<body", 1)[1] if "<body" in html else html
     body = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", body, flags=re.S)
@@ -215,6 +248,8 @@ def main(argv=None) -> int:
                     help="previous revision of the same draft: renderer highlights the change")
     ap.add_argument("--rev-dir", type=Path, default=None,
                     help="dir with <slug>.prev.md; the renderer diffs against it automatically")
+    ap.add_argument("--skip-visual-gate", action="store_true",
+                    help="skip the advisory visual value gate")
     ap.add_argument("--open", action="store_true")
     args = ap.parse_args(argv)
 
@@ -226,6 +261,15 @@ def main(argv=None) -> int:
 
     ok, out = prose_gate(args.src, args.python)
     results.append(("prose (check-prose.py)", ok, out))
+
+    if args.skip_visual_gate:
+        results.append(("visual value gate", True, "skipped via --skip-visual-gate"))
+    else:
+        ok, out = visual_value_gate(args.src, args.python)
+        results.append(("visual value gate", ok, out))
+
+    ok, out = mermaid_check(args.src, args.python)
+    results.append(("mermaid auto-check", ok, out))
 
     ok, hits = identifier_gate(md_text, args.allow_identifier,
                                load_denylist(args.denylist) if args.denylist else None)

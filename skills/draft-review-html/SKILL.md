@@ -82,6 +82,19 @@ one fetch-once copy of the GitHub markdown stylesheet, uses the markdown and
 pygments libraries, and keeps the palette in its own header. Do not invent a
 different palette.
 
+## Visual value gate (automatic, advisory)
+
+`scripts/protean-drafts/visual-value-gate.py` runs automatically in the
+draft pipeline on every draft, right after the prose gate. It is
+conservative by design: NOT-WARRANTED is the common case, and a draft
+that stays prose passes. When it fires WARRANTED, the suggested visual
+type (table, mermaid, or image) is a recommendation, not a mandate.
+The author's judgment overrides the gate (`--skip-visual-gate`).
+
+When the draft already holds a visual, the gate reports VALIDATION
+and the pipeline validates any ```mermaid fences via
+`check-mermaid.py` instead of suggesting anything.
+
 ## One command per draft
 
     python3 scripts/protean-drafts/draft_pipeline.py \
