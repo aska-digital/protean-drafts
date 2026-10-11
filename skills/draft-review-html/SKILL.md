@@ -1,14 +1,14 @@
 ---
 name: draft-review-html
 description: "Use when a GitHub issue or pull request draft must be shown for review. Render it as a self-contained, dark single-file HTML page."
-version: 1.0.0
+version: 1.0.1
 author: the Protean publication
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
   hermes:
     tags: [GitHub, Draft, Review, HTML, Markdown, SOP]
-    related_skills: [protean-operating-doctrine, external-writing-discipline, github-pr-audit]
+    related_skills: [protean-operating-doctrine, clean-writing, github-pr-audit]
 ---
 
 # Draft Review - HTML procedure

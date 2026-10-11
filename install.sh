@@ -5,7 +5,7 @@
 set -euo pipefail
 
 SLUG="protean-drafts"
-VERSION="1.0.0"
+VERSION="1.0.1"
 
 PAYLOAD=(
   "skills/draft-review-html"
